@@ -11,7 +11,7 @@
           seckill
         SET
           number = number - 1
-        WHEN seckill_id = #{seckillId}
+        WHERE seckill_id = #{seckillId}
         AND start_time  <![CDATA[ <= ]]> #{killTime}
         AND end_time >= #{killTime}
         AND number > 0;
