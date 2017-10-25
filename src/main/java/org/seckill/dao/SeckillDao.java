@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by Charry on 2017/10/24.
  */
-public interface SuckillDao {
+public interface SeckillDao {
 
     /**
      * 减库存,
@@ -27,9 +27,9 @@ public interface SuckillDao {
 
     /**
      * 根据偏移量查询秒杀商品列表
-     * @param offet
+     * @param offset
      * @param limit
      * @return
      */
-    List<Seckill> queryAll(int offet, int limit);
+    List<Seckill> queryAll(int offset, int limit);
 }
