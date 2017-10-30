@@ -5,7 +5,7 @@
 http://logback.qos.ch/manual/configuration.html
 
   -->
-<configuration>
+<configuration debug="true">
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoders are assigned the type
               ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
@@ -31,8 +31,11 @@ http://logback.qos.ch/manual/configuration.html
     </appender>
     -->
 
-    <root level="info">
+    <!-- level 值可为 info只输出info级别的内容(不包含debug)
+                      debug输出debug级别的内容(包含info)
+    -->
+    <root level="debug">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
+        <!--<appender-ref ref="FILE" />-->
     </root>
 </configuration>
