@@ -13,6 +13,7 @@ import org.seckill.exception.SeckillException;
 import org.seckill.service.SeckillService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
@@ -22,10 +23,13 @@ import java.util.List;
 /**
  * Created by Charry on 2017/10/26.
  */
+//@Component @Service @Dao @Controller
+@Service
 public class SeckillServiceImpl implements SeckillService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    //@注入Service依赖
     @Resource
     private SeckillDao seckillDao;
 
