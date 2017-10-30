@@ -6,6 +6,7 @@ import org.seckill.dto.Exposer;
 import org.seckill.dto.SeckillExecution;
 import org.seckill.entity.Seckill;
 import org.seckill.entity.SuccessKilled;
+import org.seckill.enums.SeckillStateEnum;
 import org.seckill.exception.RepeatKillException;
 import org.seckill.exception.SeckillCloseException;
 import org.seckill.exception.SeckillException;
@@ -14,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
 
-import javax.swing.text.html.parser.DTD;
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -25,8 +26,10 @@ public class SeckillServiceImpl implements SeckillService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Resource
     private SeckillDao seckillDao;
 
+    @Resource
     private SuccessKilledDao successKilledDao;
 
     //md5盐值字符串，用于混淆MD5
@@ -87,7 +90,7 @@ public class SeckillServiceImpl implements SeckillService {
                 } else {
                     //秒杀成功
                     SuccessKilled successKilled = successKilledDao.queryByIdWithSeckill(seckillId, userPhone);
-                    return new SeckillExecution(seckillId, 1, "秒杀成功");
+                    return new SeckillExecution(seckillId, SeckillStateEnum.SUCCESS);
                 }
             }
         } catch (SeckillCloseException e1) {
