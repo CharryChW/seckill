@@ -2,6 +2,7 @@ package org.seckill.service.impl;
 
 import org.seckill.dao.SeckillDao;
 import org.seckill.dao.SuccessKilledDao;
+import org.seckill.dao.cache.RedisDao;
 import org.seckill.dto.Exposer;
 import org.seckill.dto.SeckillExecution;
 import org.seckill.entity.Seckill;
@@ -37,6 +38,9 @@ public class SeckillServiceImpl implements SeckillService {
     @Resource
     private SuccessKilledDao successKilledDao;
 
+    @Resource
+    private RedisDao redisDao;
+
     //md5盐值字符串，用于混淆MD5
     private final String slat = "sadlfjklsadj@#$($*#%jlkedsj";
 
@@ -49,9 +53,18 @@ public class SeckillServiceImpl implements SeckillService {
     }
 
     public Exposer exportSeckillUrl(long seckillId) {
-        Seckill seckill = seckillDao.queryById(seckillId);
+        //优化点:缓存优化,一致性:建立在超时的基础上维护
+        //1:访问redis
+        Seckill seckill = redisDao.getSeckill(seckillId);
         if (seckill == null) {
-            return new Exposer(false, seckillId);
+            //2:访问数据库
+            seckill = seckillDao.queryById(seckillId);
+            if (seckill == null) {
+                return new Exposer(false, seckillId);
+            }else {
+                //3:放入redis
+                redisDao.putSeckill(seckill);
+            }
         }
         Date startTime = seckill.getStartTime();
         Date endTime = seckill.getEndTime();
@@ -72,14 +85,13 @@ public class SeckillServiceImpl implements SeckillService {
         return md5;
     }
 
-    @Transactional
     /**
      * 使用注解控制事务方法的优点
      * 1：开发团队达成一致约定，明确标注事务方法的编程风格
      * 2：保证事务方法的执行时间尽可能短，不要穿插其他的网络操作RPC/HTTP请求或者剥离到事务方法外部
      * 3：不是所有的方法都需要事务，如只有一条修改操作，只读操作不需要事务控制
      */
-    @Override
+    @Transactional
     public SeckillExecution executeSeckill(long seckillId, long userPhone, String md5)
             throws SeckillException, RepeatKillException, SeckillCloseException {
         if (md5 == null || !md5.equals(getMD5(seckillId))) {
